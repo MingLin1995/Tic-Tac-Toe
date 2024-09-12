@@ -1,0 +1,11 @@
+{
+  "workbench.colorTheme": "Default Dark Modern",
+  "editor.minimap.enabled": false,
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+  "explorer.confirmDelete": false,
+  "workbench.editorAssociations": {
+    "{git,gitlens}:/**/*.{md,csv,svg}": "default"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
