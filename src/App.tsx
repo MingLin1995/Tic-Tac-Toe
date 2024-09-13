@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 
 interface SquareProps {
@@ -21,9 +22,8 @@ export default function Board() {
   const [xIsNext, setXIsNext] = useState(true); // 預設 X = true
 
   function handleClick(i: number) {
-    // 判斷是否已經有值 ( X or O)
-
-    if (squares[i]) {
+    // 判斷是否已經有值 ( X or O) or 檢查是否已經達成一直線
+    if (squares[i] || calculateWinner(squares)) {
       return;
     }
 
@@ -39,8 +39,19 @@ export default function Board() {
     setXIsNext(!xIsNext); // 更新 xIsNext 為下一個玩家
   }
 
+  const winner = calculateWinner(squares);
+  let status: string;
+  if (winner) {
+    status = '贏家是：' + winner + ' ！';
+  } else if (!squares.includes(null)) {
+    status = '平手～';
+  } else {
+    status = '下一位是：' + (xIsNext ? 'X' : 'O') + ' ～';
+  }
+
   return (
     <>
+      <div className="status">{status}</div>
       <div className="board-row">
         {/* 將 value onSquareClick props 傳遞給 Square 組件 */}
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
@@ -59,6 +70,26 @@ export default function Board() {
       </div>
     </>
   );
+}
+
+function calculateWinner(squares: (string | null)[]) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
 }
 
 // 定義方塊組件
