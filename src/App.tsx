@@ -15,11 +15,12 @@ function Square({ value, onSquareClick }: SquareProps) {
   );
 }
 
-export default function Board() {
+// 由 props 控制
+function Board({ xIsNext, squares, onPlay }) {
   // Array 建立長度為9的空陣列 ; fill 用來填充陣列的方法
   // squares = [null, null, null, null, null, null, null, null, null]
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const [xIsNext, setXIsNext] = useState(true); // 預設 X = true
+  // const [squares, setSquares] = useState(Array(9).fill(null));
+  // const [xIsNext, setXIsNext] = useState(true); // 預設 X = true
 
   function handleClick(i: number) {
     // 判斷是否已經有值 ( X or O) or 檢查是否已經達成一直線
@@ -28,7 +29,7 @@ export default function Board() {
     }
 
     const nextSquares = squares.slice(); // 建立副本，可與之前紀錄做比較（返回上一步）
-    setSquares(nextSquares); // 更新 squares 狀態
+    // setSquares(nextSquares); // 更新 squares 狀態
 
     // 用來判斷是否為下個玩家
     if (xIsNext) {
@@ -36,7 +37,8 @@ export default function Board() {
     } else {
       nextSquares[i] = 'O';
     }
-    setXIsNext(!xIsNext); // 更新 xIsNext 為下一個玩家
+    // setXIsNext(!xIsNext); // 更新 xIsNext 為下一個玩家
+    onPlay(nextSquares); // 更新 squares xIsNext
   }
 
   const winner = calculateWinner(squares);
@@ -69,6 +71,49 @@ export default function Board() {
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
       </div>
     </>
+  );
+}
+
+export default function Game() {
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [currentMove, setCurrentMove] = useState(0);
+  const xIsNext = currentMove % 2 === 0;
+  const currentSquares = history[currentMove];
+
+  function handlePlay(nextSquares: (string | null)[]) {
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    // 更新 squares 改為用 history 儲存 （每個步驟的每個格子的值）
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
+  }
+
+  function jumpTo(nextMove: number) {
+    setCurrentMove(nextMove);
+  }
+
+  const moves = history.map((squares, move) => {
+    let description: string;
+    if (move > 0) {
+      description = '回到第 ' + move + ' 步驟';
+    } else {
+      description = '回到開始遊戲';
+    }
+    return (
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
+
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+      </div>
+      <div className="game-info">
+        <ol>{moves}</ol>
+      </div>
+    </div>
   );
 }
 
