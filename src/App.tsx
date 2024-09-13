@@ -1,6 +1,11 @@
 import { useState } from 'react';
 
-function Square({ value, onSquareClick }) {
+interface SquareProps {
+  value: string | null;
+  onSquareClick: () => void;
+}
+
+function Square({ value, onSquareClick }: SquareProps) {
   // 從 Board 組件，接收 value onSquareClick 的 props
   return (
     <button className="square" onClick={onSquareClick}>
@@ -15,7 +20,7 @@ export default function Board() {
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [xIsNext, setXIsNext] = useState(true); // 預設 X = true
 
-  function handleClick(i) {
+  function handleClick(i: number) {
     // 判斷是否已經有值 ( X or O)
 
     if (squares[i]) {
@@ -23,7 +28,6 @@ export default function Board() {
     }
 
     const nextSquares = squares.slice(); // 建立副本，可與之前紀錄做比較（返回上一步）
-    nextSquares[i] = 'X';
     setSquares(nextSquares); // 更新 squares 狀態
 
     // 用來判斷是否為下個玩家
