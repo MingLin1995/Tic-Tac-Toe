@@ -11,10 +11,10 @@ interface ProductRowProps {
 
 // 產品
 function ProductRow({ product }: ProductRowProps) {
-  const name = product.stocked ? (
+  const name = product.stocked ? ( // 根據庫存狀態顯示產品名稱
     product.name
   ) : (
-    <span style={{ color: 'red' }}>{product.name}</span>
+    <span style={{ color: 'red' }}>{product.name}</span> // 庫存不足顯示紅色
   );
 
   return (
@@ -55,25 +55,26 @@ function ProductTable({
   filterText,
   inStockOnly,
 }: ProductTableProps) {
-  const rows: JSX.Element[] = [];
-  let lastCategory: string | null = null;
+  const rows: JSX.Element[] = []; // 儲存顯示的行
+  let lastCategory: string | null = null; // 儲存上一次的類別，下次篩選條件更新時，可以做比較
   products.forEach((product) => {
     if (product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1) {
-      return;
+      return; // 如果產品名稱不包含篩選文字，則跳過
     }
     if (inStockOnly && !product.stocked) {
-      return;
+      return; // 如果只顯示有庫存的產品，且當前產品無庫存，則跳過
     }
     if (product.category !== lastCategory) {
+      // 如果有新增的類別，就插入新的類別（確保類別不會一直重複）
       rows.push(
         <ProductCategoryRow
           category={product.category}
-          key={product.category}
+          key={product.category} // 使用類別作為KEY
         />,
       );
     }
-    rows.push(<ProductRow product={product} key={product.name} />);
-    lastCategory = product.category;
+    rows.push(<ProductRow product={product} key={product.name} />); // 增加產品的行
+    lastCategory = product.category; // 更新上一次的類別
   });
 
   return (
@@ -108,14 +109,14 @@ function SearchBar({
       <input
         type="text"
         placeholder="Search..."
-        value={filterText}
+        value={filterText} // 目前的篩選文字
         onChange={(e) => onFilterTextChange(e.target.value)} // input 被觸發時，將值傳遞給 onFilterTextChange ，實現即時更新
       />
       <label>
         <input
           type="checkbox"
-          checked={inStockOnly}
-          onChange={(e) => onInStockOnlyChange(e.target.checked)}
+          checked={inStockOnly} // 目前的庫存數量
+          onChange={(e) => onInStockOnlyChange(e.target.checked)} // 句選狀態改變，更新庫存狀態
         />{' '}
         只顯示有庫存的產品
       </label>
@@ -142,8 +143,8 @@ function FilterableProductTable({ products }: FilterableProductTableProps) {
       <SearchBar
         filterText={filterText}
         inStockOnly={inStockOnly}
-        onFilterTextChange={setFilterText}
-        onInStockOnlyChange={setInStockOnly}
+        onFilterTextChange={setFilterText} // 更新篩選文字
+        onInStockOnlyChange={setInStockOnly} // 更新庫存狀態
       />
       <ProductTable
         products={products}
